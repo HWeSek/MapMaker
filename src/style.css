@@ -1,0 +1,24 @@
+* {
+    color: whitesmoke;
+    box-sizing: border-box;
+    font-family: monospace;
+}
+
+body {
+    background-color: rgb(38, 28, 92);
+    padding: 10px;
+}
+
+#items {
+    display: grid;
+    grid-template-columns: repeat(16,auto);
+    grid-template-rows: repeat(40,auto);
+    row-gap: 2px;
+    column-gap: 2px;
+}
+
+.item {
+    width: 25px;
+    height: 25px;
+    border: 1px lightcyan solid;
+}
