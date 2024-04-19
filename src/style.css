@@ -13,12 +13,14 @@ body {
     display: grid;
     grid-template-columns: repeat(16,auto);
     grid-template-rows: repeat(40,auto);
-    row-gap: 2px;
-    column-gap: 2px;
+    row-gap: 1px;
+    column-gap: 1px;
 }
 
 .item {
     width: 25px;
     height: 25px;
     border: 1px lightcyan solid;
+    background-repeat: no-repeat;
+    background-size: 768px 480px;
 }
