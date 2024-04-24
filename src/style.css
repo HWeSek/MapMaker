@@ -5,7 +5,7 @@
 }
 
 body {
-    background-color: rgb(38, 28, 92);
+    background-color: rgb(0, 0, 0);
     padding: 10px;
 }
 
@@ -15,6 +15,7 @@ body {
     grid-template-rows: repeat(40,auto);
     row-gap: 1px;
     column-gap: 1px;
+    width: fit-content;
 }
 
 .item {
@@ -23,4 +24,15 @@ body {
     border: 1px lightcyan solid;
     background-repeat: no-repeat;
     background-size: 768px 480px;
+    opacity: 0.4;
+}
+
+.item:hover{
+    opacity: 1;
+    border: 2px rgb(143, 23, 23) dashed;
+}
+
+.selected {
+    opacity: 1;
+    border: 2px rgb(143, 23, 23) dashed;
 }
