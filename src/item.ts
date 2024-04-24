@@ -1,5 +1,5 @@
 import SpriteSheet from '/sprites.png';
-import { Data } from './main';
+import { Data } from './data';
 
 interface Coordinates {
     x: number,
@@ -27,17 +27,17 @@ export default class Item {
         return { x: col, y: row };
     }
 
-    public createElement() {
+    public createElement(target: string) {
         let item: HTMLDivElement = document.createElement('div');
         item.classList.add('item');
         item.style.backgroundImage = `url(${SpriteSheet})`;
         item.style.backgroundPositionX = `-${this.positionFromId(this.type).x * 24}px`
         item.style.backgroundPositionY = `-${this.positionFromId(this.type).y * 24}px`
-        item.addEventListener('click', () => {
+        item.onclick = () => {
             document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
             item.classList.add('selected');
             Data.selected_item_type = this.type;
-        })
-        document.getElementById('items')?.append(item);
+        }
+        document.getElementById(target)?.append(item);
     }
 }

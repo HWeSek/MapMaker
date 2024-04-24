@@ -36,3 +36,13 @@ body {
     opacity: 1;
     border: 2px rgb(143, 23, 23) dashed;
 }
+
+#map {
+    margin-left: 200px;
+    display: grid;
+    grid-template-columns: repeat(32,auto);
+    grid-template-rows: repeat(32,auto);
+    row-gap: 1px;
+    column-gap: 1px;
+    width: fit-content;
+}
