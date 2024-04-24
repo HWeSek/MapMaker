@@ -46,3 +46,7 @@ body {
     column-gap: 1px;
     width: fit-content;
 }
+
+#map .item {
+    opacity: 1;
+}
