@@ -4,7 +4,9 @@ interface appdata {
     selected_item_type: number
     selected_items: Array<HTMLDivElement>
     automat: boolean
-    map_elements: Array<Item>
+    map_elements: Array<Item>,
+    history: Array<Array<Item>>,
+    ctrl: boolean
 }
 
 export let Data: appdata = {
@@ -12,4 +14,6 @@ export let Data: appdata = {
     selected_items: [],
     automat: false,
     map_elements: [],
+    history: [],
+    ctrl: false
 }

@@ -50,3 +50,25 @@ body {
 #map .item {
     opacity: 1;
 }
+
+#context_menu {
+    width: 200px;
+    height: fit-content;
+    border: 1px solid gray;
+    background-color: whitesmoke;
+    position: absolute;
+    display: none;
+    flex-direction: column;
+}
+
+#context_menu button {
+    color: black;
+    font-size: 1.1em;
+    text-align: left;
+}
+
+#context_menu button strong {
+    color: black;
+    font-size: 1em;
+    float: right;
+}

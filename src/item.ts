@@ -1,3 +1,4 @@
+//@ts-ignore
 import SpriteSheet from '/sprites.png';
 import { Data } from './data';
 
@@ -13,9 +14,9 @@ interface ItemValues {
 }
 
 export default class Item implements ItemValues {
-    public position
+    readonly position
     public type
-    public item
+    readonly item
     constructor(position: Coordinates, id: number) {
         this.position = position;
         this.type = id;
@@ -42,18 +43,20 @@ export default class Item implements ItemValues {
         if (target == 'items') {
 
             this.item.onclick = () => {
-                console.log(Data.selected_items);
                 if (Data.selected_items.length != 0) {
+                    Data.history.push(Data.map_elements);
                     document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
                     this.item.classList.add('selected');
                     Data.selected_item_type = this.type;
 
-                    this.colorElement(Data.selected_item_type, Data.selected_items[0]);
+                    Data.selected_items.forEach((item) => {
+                        this.colorElement(Data.selected_item_type, item);
+                    })
 
-                    let elPosition: Coordinates = JSON.parse(Data.selected_items[0].getAttribute('cords'));
+                    let elPosition: Coordinates = JSON.parse(Data.selected_items[Data.selected_items.length - 1].getAttribute('cords')!);
                     let index: number = (elPosition.y - 1) * 32 + elPosition.x - 1;
                     Data.map_elements[index + 1].type = this.type;
-                    Data.selected_items.pop()
+                    Data.selected_items = [];
                     if (Data.automat) {
                         Data.map_elements[index + 1].item.classList.add('selected')
                         Data.selected_items.push(Data.map_elements[index + 1].item)
@@ -65,9 +68,11 @@ export default class Item implements ItemValues {
             this.item.setAttribute('cords', `{"x": ${String(this.position.x)}, "y": ${String(this.position.y)}}`)
 
             this.item.onclick = () => {
-                document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
+                if (!Data.ctrl) {
+                    document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
+                    Data.selected_items.pop();
+                }
                 this.item.classList.add('selected');
-                Data.selected_items.pop();
                 Data.selected_items.push(this.item);
             }
         }
