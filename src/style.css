@@ -72,3 +72,9 @@ body {
     font-size: 1em;
     float: right;
 }
+
+#hover {
+    position: absolute;
+    background-color: rgba(236, 213, 4, 0.3);
+    display: none;
+}

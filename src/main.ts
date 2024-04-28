@@ -70,6 +70,16 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    window.addEventListener('mousedown', (e)=>{
+        let hover : HTMLElement = document.getElementById('hover')!;
+        hover.style.top = `${e.clientX}px`;
+        hover.style.left = `${e.clientY}px`;
+        window.addEventListener('mousemove', ()=>{
+            let hover : HTMLElement = document.getElementById('hover')!;
+            console.log( getComputedStyle(hover).left);
+            
+        })
+    })
     
 
 }, { once: true });
