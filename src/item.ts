@@ -44,7 +44,6 @@ export default class Item implements ItemValues {
 
             this.item.onclick = () => {
                 if (Data.selected_items.length != 0) {
-                    Data.history.push(Data.map_elements);
                     document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
                     this.item.classList.add('selected');
                     Data.selected_item_type = this.type;
@@ -55,12 +54,14 @@ export default class Item implements ItemValues {
 
                     let elPosition: Coordinates = JSON.parse(Data.selected_items[Data.selected_items.length - 1].getAttribute('cords')!);
                     let index: number = (elPosition.y - 1) * 32 + elPosition.x - 1;
-                    Data.map_elements[index + 1].type = this.type;
+                    Data.map_elements[index].type = this.type;
                     Data.selected_items = [];
                     if (Data.automat) {
                         Data.map_elements[index + 1].item.classList.add('selected')
                         Data.selected_items.push(Data.map_elements[index + 1].item)
                     }
+                    Data.history.push(JSON.parse(JSON.stringify(Data.map_elements)));
+                    Data.position_in_history++;
                 }
             }
 
@@ -81,7 +82,7 @@ export default class Item implements ItemValues {
     }
 
 
-    private colorElement(id: number, item: HTMLDivElement) {
+    public colorElement(id: number = this.type, item: HTMLDivElement = this.item) {
         /////change displayed image on an element
         item.style.backgroundImage = `url(${SpriteSheet})`;
         item.style.backgroundPositionX = `-${this.positionFromId(id).x * 24}px`

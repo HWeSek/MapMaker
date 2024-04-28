@@ -2,18 +2,19 @@ import { Data } from "./data"
 import Item from "./item"
 
 const Utils = {
-    mapLoader: (elements: Array<Item>) => {
+    mapLoader: (elements: Array<Item> | undefined) => {
         if (elements) {
-            elements.forEach((field) => {
-
-            })
+            for(let i in elements){          
+                Data.map_elements[i].type = elements[i].type;
+                Data.map_elements[i].colorElement();
+            }
         }
     },
-    getLastVersion: () => {
-        if (Data.history.length > 1) {
-            return Data.history.pop();
+    getVersion: () => {      
+        if (Data.history.length >= 1) {
+            return Data.history[Data.position_in_history]
         } else {
-            return [];
+            return undefined;
         }
     }
 }

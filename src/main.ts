@@ -23,6 +23,9 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    Data.history.push(JSON.parse(JSON.stringify(Data.map_elements)));
+    Data.position_in_history++;
+
 
     /////AUTOMAT
     let input: HTMLInputElement = document.getElementById('automat')! as HTMLInputElement;
@@ -32,12 +35,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     //////////KEYBINDS
     window.addEventListener("keydown", (event) => {
-        event.preventDefault();
         Data.ctrl = event.ctrlKey
     });
 
     window.addEventListener("keyup", (event) => {
-        event.preventDefault();
         Data.ctrl = event.ctrlKey
     });
 
@@ -50,11 +51,26 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 
     window.addEventListener("keydown", (event) => {
-        event.preventDefault();
+        console.log(Data.history, Data.position_in_history);
+        
         if (event.ctrlKey && event.key == 'z') {
-            Utils.mapLoader(Utils.getLastVersion()!);
-        } else { }
+            if (Data.history.length >= 1) {
+                if (Data.position_in_history >= 0) {
+                    Data.position_in_history--
+                }
+            }
+            Utils.mapLoader(Utils.getVersion());
+        } else  if (event.ctrlKey && event.key == 'y') {
+            if (Data.history.length >= 1) {
+                if (Data.position_in_history < Data.history.length) {
+                    Data.position_in_history++
+                }
+            }
+            Utils.mapLoader(Utils.getVersion());
+        }
     });
+
+    
 
 }, { once: true });
 

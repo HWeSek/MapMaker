@@ -6,7 +6,8 @@ interface appdata {
     automat: boolean
     map_elements: Array<Item>,
     history: Array<Array<Item>>,
-    ctrl: boolean
+    ctrl: boolean,
+    position_in_history: number,
 }
 
 export let Data: appdata = {
@@ -15,5 +16,6 @@ export let Data: appdata = {
     automat: false,
     map_elements: [],
     history: [],
-    ctrl: false
+    ctrl: false,
+    position_in_history: 0
 }
