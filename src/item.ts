@@ -42,7 +42,7 @@ export default class Item implements ItemValues {
         this.colorElement(this.type, this.item)
         if (target == 'items') {
 
-            this.item.onclick = () => {
+            this.item.addEventListener('click', () => {
                 if (Data.selected_items.length != 0) {
                     document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
                     this.item.classList.add('selected');
@@ -63,19 +63,64 @@ export default class Item implements ItemValues {
                     Data.history.push(JSON.parse(JSON.stringify(Data.map_elements)));
                     Data.position_in_history++;
                 }
-            }
+            }, true)
 
         } else if (target == 'map') {
             this.item.setAttribute('cords', `{"x": ${String(this.position.x)}, "y": ${String(this.position.y)}}`)
 
-            this.item.onclick = () => {
+            this.item.addEventListener('click', () => {
                 if (!Data.ctrl) {
                     document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
                     Data.selected_items.pop();
+                    console.log('test');
                 }
                 this.item.classList.add('selected');
                 Data.selected_items.push(this.item);
-            }
+            }, true)
+
+            this.item.addEventListener('mousedown', () => {
+                if (!Data.ctrl) {
+                Data.area_selector_item = this.item;
+                document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
+                Data.selected_items = [];
+                }
+            })
+
+            this.item.addEventListener('mousemove', () => {  
+                if(Data.area_selector_item){
+                    let position1 = JSON.parse(Data.area_selector_item?.getAttribute('cords')!);
+                    let position2 = this.position;
+                    let x1 : number = position1.x > position2.x ? position2.x : position1.x
+                    let x2 : number = position1.x > position2.x ? position1.x : position2.x
+                    let y1 : number = position1.y > position2.y ? position2.y : position1.y
+                    let y2 : number = position1.y > position2.y ? position1.y : position2.y
+                    for(let i=y1; i<=y2; i++){
+                        for(let j=x1; j<=x2; j++){
+                            let position : Coordinates = {x: j, y: i}
+                            let item = Data.map_elements.find(element => element.position.x == position.x && element.position.y == position.y)!;
+                            item.item.classList.add('selected');
+                        }
+                    }
+                    }    
+            })
+
+            this.item.addEventListener('mouseup', () => {                  
+                let position1 = JSON.parse(Data.area_selector_item?.getAttribute('cords')!);
+                let position2 = this.position;
+                let x1 : number = position1.x > position2.x ? position2.x : position1.x
+                let x2 : number = position1.x > position2.x ? position1.x : position2.x
+                let y1 : number = position1.y > position2.y ? position2.y : position1.y
+                let y2 : number = position1.y > position2.y ? position1.y : position2.y
+                Data.area_selector_item = null;
+                for(let i=y1; i<=y2; i++){
+                    for(let j=x1; j<=x2; j++){
+                        let position : Coordinates = {x: j, y: i}
+                        let item = Data.map_elements.find(element => element.position.x == position.x && element.position.y == position.y)!;
+                        item.item.classList.add('selected');
+                        Data.selected_items.push(item.item)
+                    }
+                }
+            })
         }
 
         document.getElementById(target)?.append(this.item);

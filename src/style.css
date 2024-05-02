@@ -2,6 +2,7 @@
     color: whitesmoke;
     box-sizing: border-box;
     font-family: monospace;
+    user-select: none;
 }
 
 body {
@@ -52,7 +53,7 @@ body {
 }
 
 #context_menu {
-    width: 200px;
+    width: 220px;
     height: fit-content;
     border: 1px solid gray;
     background-color: whitesmoke;
@@ -76,5 +77,7 @@ body {
 #hover {
     position: absolute;
     background-color: rgba(236, 213, 4, 0.3);
+    border: 1px rgba(108, 1, 22, 0.4) solid;
     display: none;
+    pointer-events: none;
 }
