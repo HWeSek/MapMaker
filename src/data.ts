@@ -8,7 +8,8 @@ interface appdata {
     history: Array<Array<Item>>,
     ctrl: boolean,
     position_in_history: number,
-    area_selector_item: HTMLDivElement | null
+    area_selector_item: HTMLDivElement | null,
+    copy_buffer: Array<HTMLDivElement>
 }
 
 export let Data: appdata = {
@@ -19,5 +20,6 @@ export let Data: appdata = {
     history: [],
     ctrl: false,
     position_in_history: 0,
-    area_selector_item: null
+    area_selector_item: null,
+    copy_buffer: []
 }

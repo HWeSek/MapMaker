@@ -12,7 +12,7 @@ const Utils = {
     },
     getVersion: () => {      
         if (Data.history.length >= 1) {
-            return Data.history[Data.position_in_history]
+            return Data.history[Data.position_in_history-1]
         } else {
             return undefined;
         }

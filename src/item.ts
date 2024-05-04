@@ -23,7 +23,7 @@ export default class Item implements ItemValues {
         this.item = document.createElement('div');
     }
 
-    private positionFromId(id: number): Coordinates {
+    static positionFromId(id: number): Coordinates {
         let row: number;
         let col: number;
         if (id <= 320) {
@@ -50,6 +50,9 @@ export default class Item implements ItemValues {
 
                     Data.selected_items.forEach((item) => {
                         this.colorElement(Data.selected_item_type, item);
+                        let elPosition: Coordinates = JSON.parse(item.getAttribute('cords')!);
+                        let index: number = (elPosition.y - 1) * 32 + elPosition.x - 1;
+                        Data.map_elements[index].type = this.type;
                     })
 
                     let elPosition: Coordinates = JSON.parse(Data.selected_items[Data.selected_items.length - 1].getAttribute('cords')!);
@@ -79,8 +82,8 @@ export default class Item implements ItemValues {
             }, true)
 
             this.item.addEventListener('mousedown', () => {
-                if (!Data.ctrl) {
                 Data.area_selector_item = this.item;
+                if (!Data.ctrl) {
                 document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
                 Data.selected_items = [];
                 }
@@ -88,6 +91,7 @@ export default class Item implements ItemValues {
 
             this.item.addEventListener('mousemove', () => {  
                 if(Data.area_selector_item){
+                    if (!Data.ctrl) document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
                     let position1 = JSON.parse(Data.area_selector_item?.getAttribute('cords')!);
                     let position2 = this.position;
                     let x1 : number = position1.x > position2.x ? position2.x : position1.x
@@ -130,7 +134,14 @@ export default class Item implements ItemValues {
     public colorElement(id: number = this.type, item: HTMLDivElement = this.item) {
         /////change displayed image on an element
         item.style.backgroundImage = `url(${SpriteSheet})`;
-        item.style.backgroundPositionX = `-${this.positionFromId(id).x * 24}px`
-        item.style.backgroundPositionY = `-${this.positionFromId(id).y * 24}px`
+        item.style.backgroundPositionX = `-${Item.positionFromId(id).x * 24}px`
+        item.style.backgroundPositionY = `-${Item.positionFromId(id).y * 24}px`
+    }
+
+    static colorElement(id: number, item: HTMLDivElement) {
+        /////change displayed image on an element
+        item.style.backgroundImage = `url(${SpriteSheet})`;
+        item.style.backgroundPositionX = `-${Item.positionFromId(id).x * 24}px`
+        item.style.backgroundPositionY = `-${Item.positionFromId(id).y * 24}px`
     }
 }

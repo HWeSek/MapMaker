@@ -2,6 +2,11 @@ import Item from './item';
 import { Data } from './data';
 import Utils from './utils';
 
+interface Coordinates {
+    x: number,
+    y: number
+}
+
 window.addEventListener( 'DOMContentLoaded', () => { // ///ITEMS INIT
     let counter: number = 0;
     for ( let i: number = 1; i <= 40; i++ ) {
@@ -35,6 +40,7 @@ window.addEventListener( 'DOMContentLoaded', () => { // ///ITEMS INIT
     // ////////KEYBINDS
     window.addEventListener( "keydown", ( event ) => {
         Data.ctrl = event.ctrlKey
+        console.log(Data.copy_buffer);
     } );
 
     window.addEventListener( "keyup", ( event ) => {
@@ -46,10 +52,10 @@ window.addEventListener( 'DOMContentLoaded', () => { // ///ITEMS INIT
         let menu: HTMLElement = document.getElementById( 'context_menu' )!;
         menu.style.display = 'flex';
         menu.style.top = `${
-            e.clientY
+            e.pageY
         }px`
         menu.style.left = `${
-            e.clientX
+            e.pageX
         }px`
         window.addEventListener( 'click', () => {
             menu.style.display = 'none';
@@ -58,19 +64,42 @@ window.addEventListener( 'DOMContentLoaded', () => { // ///ITEMS INIT
 
     window.addEventListener( "keydown", ( event ) => {
         if ( event.ctrlKey && event.key == 'z' ) {
-            if ( Data.history.length >= 1 ) {
-                if ( Data.position_in_history >= 0 ) {
+            ////UNDO
+            if ( Data.history.length > 1 ) {
+                if ( Data.position_in_history > 1 ) {
                     Data.position_in_history --
                 }
             }
             Utils.mapLoader( Utils.getVersion() );
         } else if ( event.ctrlKey && event.key == 'y' ) {
+            ////REDO
             if ( Data.history.length >= 1 ) {
                 if ( Data.position_in_history < Data.history.length ) {
                     Data.position_in_history ++
                 }
             }
             Utils.mapLoader( Utils.getVersion() );
+        } else if ( event.ctrlKey && event.key == 'x' ) {
+            //////CUT
+            if(Data.selected_items.length > 0){
+                Data.copy_buffer = Data.selected_items.slice();
+                Data.selected_items.forEach((item) => {
+                    Item.colorElement(1000, item);
+                    let elPosition: Coordinates = JSON.parse(item.getAttribute('cords')!);
+                    let index: number = (elPosition.y - 1) * 32 + elPosition.x - 1;
+                    Data.map_elements[index].type = 1000;
+                })
+                Data.selected_items = [];
+                document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
+            }
+        } else if ( event.ctrlKey && event.key == 'c' ) {
+            //////COPY
+            if(Data.selected_items.length > 0){
+                Data.copy_buffer = Data.selected_items.slice();
+            }
+        } else if ( event.ctrlKey && event.key == 'v' ) {
+            //////PASTE
+
         }
     } );
 
@@ -100,7 +129,7 @@ window.addEventListener( 'DOMContentLoaded', () => { // ///ITEMS INIT
     }, false)
 
     window.addEventListener('scroll', ( e ) => {
-        y2= scry2 + window.scrollY;
+        y2= scry2 + window.scrollY;        
         reCalc();
     })
 
