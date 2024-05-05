@@ -39,7 +39,7 @@ body {
 }
 
 #map {
-    margin-left: 200px;
+    margin-left: 100px;
     display: grid;
     grid-template-columns: repeat(32,auto);
     grid-template-rows: repeat(32,auto);

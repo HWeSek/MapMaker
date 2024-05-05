@@ -1,6 +1,7 @@
 //@ts-ignore
 import SpriteSheet from '/sprites.png';
 import { Data } from './data';
+import Utils from './utils';
 
 interface Coordinates {
     x: number,
@@ -41,9 +42,11 @@ export default class Item implements ItemValues {
         this.item.classList.add('item');
         this.colorElement(this.type, this.item)
         if (target == 'items') {
+            ///events for item elements
 
             this.item.addEventListener('click', () => {
                 if (Data.selected_items.length != 0) {
+                    /////kolorowanie i zmienianie danych elementów mapy
                     document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
                     this.item.classList.add('selected');
                     Data.selected_item_type = this.type;
@@ -69,27 +72,36 @@ export default class Item implements ItemValues {
             }, true)
 
         } else if (target == 'map') {
+            /////events for map elements
             this.item.setAttribute('cords', `{"x": ${String(this.position.x)}, "y": ${String(this.position.y)}}`)
 
-            this.item.addEventListener('click', () => {
-                if (!Data.ctrl) {
-                    document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
-                    Data.selected_items.pop();
-                    console.log('test');
+            ////wybranie elementu mapy
+            this.item.addEventListener('click', (e) => {
+                if(e.button == 0){
+                    if (!Data.ctrl) {
+                        document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
+                        Data.selected_items.pop();
+                    }
+                    this.item.classList.add('selected');
+                    Data.selected_items.push(this.item);
                 }
-                this.item.classList.add('selected');
-                Data.selected_items.push(this.item);
             }, true)
 
-            this.item.addEventListener('mousedown', () => {
-                Data.area_selector_item = this.item;
-                if (!Data.ctrl) {
-                document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
-                Data.selected_items = [];
+
+            ////Selektor powierzchniowy .....
+            this.item.addEventListener('mousedown', (e) => {
+                if(e.button == 0){
+                    Data.area_selector_item = this.item;
+                    if (!Data.ctrl) {
+                    document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
+                    Data.selected_items = [];
+                    }
                 }
             })
 
             this.item.addEventListener('mousemove', () => {  
+                ////saving current cursor position over the grid
+                Data.cursor_position = this  
                 if(Data.area_selector_item){
                     if (!Data.ctrl) document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
                     let position1 = JSON.parse(Data.area_selector_item?.getAttribute('cords')!);
@@ -108,7 +120,8 @@ export default class Item implements ItemValues {
                     }    
             })
 
-            this.item.addEventListener('mouseup', () => {                  
+            this.item.addEventListener('mouseup', () => { 
+            if(Data.area_selector_item){              
                 let position1 = JSON.parse(Data.area_selector_item?.getAttribute('cords')!);
                 let position2 = this.position;
                 let x1 : number = position1.x > position2.x ? position2.x : position1.x
@@ -124,8 +137,53 @@ export default class Item implements ItemValues {
                         Data.selected_items.push(item.item)
                     }
                 }
+            }
             })
         }
+        ////////....Koniec kodu odpowiedzialnego za selektor powierzchniowy
+
+        /////Wklejanie
+        window.addEventListener('paste_custom', ()=>{
+            if(Data.copy_buffer.length > 0){
+                Data.selected_items = [];
+                let ofsetX : number = Data.copy_buffer[0].position.x
+                let ofsetY : number = Data.copy_buffer[0].position.y
+                let startPosition : Coordinates = Data.cursor_position?.position!;
+                Data.copy_buffer.forEach((element)=>{
+                    let item = Data.map_elements.find(item => item.position.x == startPosition.x + (element.position.x - ofsetX) 
+                    && item.position.y == startPosition.y + (element.position.y - ofsetY))
+                    item?.colorElement(element.type)
+                })
+
+               function copy_mouse_move(){
+                     Data.map_elements.forEach((element)=>{
+                         element.colorElement();
+                     })
+                    let startPosition : Coordinates = Data.cursor_position?.position!;
+                    Data.copy_buffer.forEach((element)=>{
+                     let item = Data.map_elements.find(item => item.position.x == startPosition.x + (element.position.x - ofsetX) 
+                     && item.position.y == startPosition.y + (element.position.y - ofsetY))
+                     item?.colorElement(element.type)
+                     })
+                }
+
+
+               this.item.addEventListener('mousemove', copy_mouse_move)
+               window.addEventListener('click', ()=>{
+                    let startPosition : Coordinates = Data.cursor_position?.position!;
+                    Data.copy_buffer.forEach((element)=>{
+                    let item = Data.map_elements.find(item => item.position.x == startPosition.x + (element.position.x - ofsetX) 
+                    && item.position.y == startPosition.y + (element.position.y - ofsetY))!
+                    item?.colorElement(element.type)
+                    item.type = element.type;
+                    })    
+                    this.item.removeEventListener('mousemove', copy_mouse_move)
+                    Data.history.push(JSON.parse(JSON.stringify(Data.map_elements)));
+                    Data.position_in_history++;
+               }, {once: true, capture: true})
+            }
+            
+        })
 
         document.getElementById(target)?.append(this.item);
     }

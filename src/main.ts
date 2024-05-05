@@ -7,6 +7,9 @@ interface Coordinates {
     y: number
 }
 
+/////custom paste event
+let paste : Event = new Event('paste_custom');
+
 window.addEventListener( 'DOMContentLoaded', () => { // ///ITEMS INIT
     let counter: number = 0;
     for ( let i: number = 1; i <= 40; i++ ) {
@@ -40,13 +43,16 @@ window.addEventListener( 'DOMContentLoaded', () => { // ///ITEMS INIT
     // ////////KEYBINDS
     window.addEventListener( "keydown", ( event ) => {
         Data.ctrl = event.ctrlKey
-        console.log(Data.copy_buffer);
+        //console.log(Data.copy_buffer);
     } );
 
     window.addEventListener( "keyup", ( event ) => {
         Data.ctrl = event.ctrlKey
     } );
 
+
+
+    ////////////////CONTEXT MENU
     window.addEventListener( "contextmenu", ( e ) => {
         e.preventDefault();
         let menu: HTMLElement = document.getElementById( 'context_menu' )!;
@@ -62,6 +68,85 @@ window.addEventListener( 'DOMContentLoaded', () => { // ///ITEMS INIT
         }, { once: true } )
     } );
 
+    document.getElementById('undo')!.addEventListener('click', ()=>{
+        ////UNDO
+        if ( Data.history.length > 1 ) {
+            if ( Data.position_in_history > 1 ) {
+                Data.position_in_history --
+            }
+        }
+        Utils.mapLoader( Utils.getVersion() );
+    })
+
+    document.getElementById('redo')!.addEventListener('click', ()=>{
+        ////REDO
+        if ( Data.history.length >= 1 ) {
+            if ( Data.position_in_history < Data.history.length ) {
+                Data.position_in_history ++
+            }
+        }
+        Utils.mapLoader( Utils.getVersion() );
+    })
+
+    document.getElementById('cut')!.addEventListener('click', ()=>{
+         //////CUT
+         if(Data.selected_items.length > 0){
+            Data.copy_buffer = []
+            Data.selected_items.slice().forEach((element)=>{
+                let position = JSON.parse(element.getAttribute('cords')!)
+                let type = Data.map_elements.find(item => item.position.x == position.x && item.position.y == position.y)?.type!
+                Data.copy_buffer.push({position: position, type: type});
+            })
+            Data.selected_items.forEach((item) => {
+                Item.colorElement(1000, item);
+                let elPosition: Coordinates = JSON.parse(item.getAttribute('cords')!);
+                let index: number = (elPosition.y - 1) * 32 + elPosition.x - 1;
+                Data.map_elements[index].type = 1000;
+            })
+            Data.selected_items = [];
+            document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
+        }
+    })
+
+    document.getElementById('copy')!.addEventListener('click', ()=>{
+        //////COPY
+        if(Data.selected_items.length > 0){
+            Data.copy_buffer = []
+            Data.selected_items.slice().forEach((element)=>{
+                let position = JSON.parse(element.getAttribute('cords')!)
+                let type = Data.map_elements.find(item => item.position.x == position.x && item.position.y == position.y)?.type!
+                Data.copy_buffer.push({position: position, type: type});
+            })
+
+        }
+    })
+
+    document.getElementById('paste')!.addEventListener('click', ()=>{
+        /////PASTE
+        document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
+        window.dispatchEvent(paste);
+    })
+
+    document.getElementById('delete')!.addEventListener('click', ()=>{
+        //////DELETE
+        if(Data.selected_items.length > 0){
+            Data.selected_items.slice().forEach((element)=>{
+                let position = JSON.parse(element.getAttribute('cords')!)
+                let item = Data.map_elements.find(item => item.position.x == position.x && item.position.y == position.y)!
+                item.type = 1000;
+                item.colorElement();
+            })
+        }   
+    })
+
+    document.getElementById('save')!.addEventListener('click', ()=>{
+        
+    })
+
+    document.getElementById('load')!.addEventListener('click', ()=>{
+        
+    })
+    /////////////////////////////////////////////////
     window.addEventListener( "keydown", ( event ) => {
         if ( event.ctrlKey && event.key == 'z' ) {
             ////UNDO
@@ -82,7 +167,12 @@ window.addEventListener( 'DOMContentLoaded', () => { // ///ITEMS INIT
         } else if ( event.ctrlKey && event.key == 'x' ) {
             //////CUT
             if(Data.selected_items.length > 0){
-                Data.copy_buffer = Data.selected_items.slice();
+                Data.copy_buffer = []
+                Data.selected_items.slice().forEach((element)=>{
+                    let position = JSON.parse(element.getAttribute('cords')!)
+                    let type = Data.map_elements.find(item => item.position.x == position.x && item.position.y == position.y)?.type!
+                    Data.copy_buffer.push({position: position, type: type});
+                })
                 Data.selected_items.forEach((item) => {
                     Item.colorElement(1000, item);
                     let elPosition: Coordinates = JSON.parse(item.getAttribute('cords')!);
@@ -95,27 +185,53 @@ window.addEventListener( 'DOMContentLoaded', () => { // ///ITEMS INIT
         } else if ( event.ctrlKey && event.key == 'c' ) {
             //////COPY
             if(Data.selected_items.length > 0){
-                Data.copy_buffer = Data.selected_items.slice();
+                Data.copy_buffer = []
+                Data.selected_items.slice().forEach((element)=>{
+                    let position = JSON.parse(element.getAttribute('cords')!)
+                    let type = Data.map_elements.find(item => item.position.x == position.x && item.position.y == position.y)?.type!
+                    Data.copy_buffer.push({position: position, type: type});
+                })
+
             }
         } else if ( event.ctrlKey && event.key == 'v' ) {
-            //////PASTE
-
+            /////PASTE
+            document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
+            window.dispatchEvent(paste);
+        } else if ( event.key == 'Delete') {
+            //////DELETE
+            if(Data.selected_items.length > 0){
+                Data.selected_items.slice().forEach((element)=>{
+                    let position = JSON.parse(element.getAttribute('cords')!)
+                    let item = Data.map_elements.find(item => item.position.x == position.x && item.position.y == position.y)!
+                    item.type = 1000;
+                    item.colorElement();
+                })
+            }   
+        } else if ( event.ctrlKey && event.key == 's' ) {
+            event.preventDefault()
+            Utils.saveMap();
+        } else if ( event.ctrlKey && event.key == 'l' ) {
+            event.preventDefault()
+            document.getElementById('file_loader')?.click();
+            document.getElementById('file_loader')?.addEventListener('change', function(){
+                Utils.loadMap(this);
+            })
         }
     } );
+    
 
     ////////AREA SELECTOR
     let div = document.getElementById( 'hover' )!,
-        x1 = 0,
-        y1 = 0,
-        x2 = 0,
-        y2 = 0,
-        scry2=0;
+        x1 : number = 0,
+        y1 : number = 0,
+        x2 : number = 0,
+        y2 : number = 0
         
     function reCalc() {
-        let x3 = Math.min( x1, x2 );
-        let x4 = Math.max( x1, x2 );
-        let y3 = Math.min( y1, y2 );
-        let y4 = Math.max( y1, y2 );
+        let x3 : number = Math.min( x1, x2 );
+        let x4 : number = Math.max( x1, x2 );
+        let y3 : number = Math.min( y1, y2 );
+        let y4 : number = Math.max( y1, y2 );
         div.style.left = x3 + 'px';
         div.style.top = y3 + 'px';
         div.style.width = x4 - x3 + 'px';
@@ -128,15 +244,13 @@ window.addEventListener( 'DOMContentLoaded', () => { // ///ITEMS INIT
         reCalc();
     }, false)
 
-    window.addEventListener('scroll', ( e ) => {
-        y2= scry2 + window.scrollY;        
+    window.addEventListener('scroll', ( e ) => {       
         reCalc();
     })
 
     window.addEventListener('mousemove', ( e ) => {
         x2 = e.pageX;
         y2 = e.pageY;
-        scry2 = e.pageY;
         reCalc();
     })
 

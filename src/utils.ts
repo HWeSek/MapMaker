@@ -16,6 +16,29 @@ const Utils = {
         } else {
             return undefined;
         }
+    },
+    saveMap: ()=>{
+        const blob : Blob = new Blob([JSON.stringify(Data.map_elements)], {type: "application/json"})
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = 'map.json'
+        link.click()
+        setTimeout(() => {
+            URL.revokeObjectURL(url);
+        }, 0)
+    },
+    loadMap: (files : HTMLElement)=>{
+        //@ts-ignore
+        let file : Blob= files.files[0]
+        const reader = new FileReader();
+        reader.readAsText(file)
+        reader.onload = ()=>{
+            
+            //@ts-ignore
+            Utils.mapLoader(JSON.parse(reader.result))
+        }
+        
     }
 }
 

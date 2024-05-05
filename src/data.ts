@@ -1,5 +1,15 @@
 import Item from "./item"
 
+interface Coordinates {
+    x: number,
+    y: number
+}
+
+interface copy_object {
+    position: Coordinates,
+    type: number
+}
+
 interface appdata {
     selected_item_type: number
     selected_items: Array<HTMLDivElement>
@@ -9,7 +19,8 @@ interface appdata {
     ctrl: boolean,
     position_in_history: number,
     area_selector_item: HTMLDivElement | null,
-    copy_buffer: Array<HTMLDivElement>
+    copy_buffer: Array<copy_object>,
+    cursor_position: Item | undefined
 }
 
 export let Data: appdata = {
@@ -21,5 +32,6 @@ export let Data: appdata = {
     ctrl: false,
     position_in_history: 0,
     area_selector_item: null,
-    copy_buffer: []
+    copy_buffer: [],
+    cursor_position: undefined
 }
