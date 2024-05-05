@@ -223,10 +223,14 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
                 window.addEventListener('click', () => {
                     let startPosition: Coordinates = Data.cursor_position?.position!;
                     Data.copy_buffer.forEach((element) => {
-                        let item = Data.map_elements.find(item => item.position.x == startPosition.x + (element.position.x - ofsetX)
-                            && item.position.y == startPosition.y + (element.position.y - ofsetY))!
-                        item?.colorElement(element.type)
-                        item.type = element.type;
+                        try {
+                            let item = Data.map_elements.find(item => item.position.x == startPosition.x + (element.position.x - ofsetX)
+                                && item.position.y == startPosition.y + (element.position.y - ofsetY))!
+                            item?.colorElement(element.type)
+                            item.type = element.type;
+                        } catch (error) {
+
+                        }
                     })
                     window.removeEventListener('mousemove', copy_mouse_move)
                     Data.history.push(JSON.parse(JSON.stringify(Data.map_elements)));
@@ -267,7 +271,7 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
         x2: number = 0,
         y2: number = 0
 
-    function reCalc() {
+    function calculate() {
         let x3: number = Math.min(x1, x2);
         let x4: number = Math.max(x1, x2);
         let y3: number = Math.min(y1, y2);
@@ -281,20 +285,20 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
         div.style.display = 'block';
         x1 = e.pageX;
         y1 = e.pageY;
-        reCalc();
+        calculate();
     }, false)
 
-    window.addEventListener('scroll', (e) => {
-        reCalc();
+    window.addEventListener('scroll', () => {
+        calculate();
     })
 
     window.addEventListener('mousemove', (e) => {
         x2 = e.pageX;
         y2 = e.pageY;
-        reCalc();
+        calculate();
     })
 
-    window.addEventListener('mouseup', (e) => {
+    window.addEventListener('mouseup', () => {
         div.style.display = 'none';
     })
 

@@ -1,7 +1,6 @@
 //@ts-ignore
 import SpriteSheet from '/sprites.png';
 import { Data } from './data';
-import Utils from './utils';
 
 interface Coordinates {
     x: number,
