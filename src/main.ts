@@ -43,7 +43,6 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
     // ////////KEYBINDS
     window.addEventListener("keydown", (event) => {
         Data.ctrl = event.ctrlKey
-        console.log(Data.history);
     });
 
     window.addEventListener("keyup", (event) => {
@@ -302,4 +301,10 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
         div.style.display = 'none';
     })
 
+
+
+    ////BAD APPLE
+    document.getElementById('ba')!.onclick = () => {
+        Utils.badApple();
+    }
 }, { once: true });
