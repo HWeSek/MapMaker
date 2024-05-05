@@ -77,7 +77,7 @@ export default class Item implements ItemValues {
 
             ////wybranie elementu mapy
             this.item.addEventListener('click', (e) => {
-                if(e.button == 0){
+                if (e.button == 0) {
                     if (!Data.ctrl) {
                         document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
                         Data.selected_items.pop();
@@ -90,100 +90,57 @@ export default class Item implements ItemValues {
 
             ////Selektor powierzchniowy .....
             this.item.addEventListener('mousedown', (e) => {
-                if(e.button == 0){
+                if (e.button == 0) {
                     Data.area_selector_item = this.item;
                     if (!Data.ctrl) {
-                    document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
-                    Data.selected_items = [];
+                        document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
+                        Data.selected_items = [];
                     }
                 }
             })
 
-            this.item.addEventListener('mousemove', () => {  
+            this.item.addEventListener('mousemove', () => {
                 ////saving current cursor position over the grid
-                Data.cursor_position = this  
-                if(Data.area_selector_item){
+                Data.cursor_position = this
+                if (Data.area_selector_item) {
                     if (!Data.ctrl) document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
                     let position1 = JSON.parse(Data.area_selector_item?.getAttribute('cords')!);
                     let position2 = this.position;
-                    let x1 : number = position1.x > position2.x ? position2.x : position1.x
-                    let x2 : number = position1.x > position2.x ? position1.x : position2.x
-                    let y1 : number = position1.y > position2.y ? position2.y : position1.y
-                    let y2 : number = position1.y > position2.y ? position1.y : position2.y
-                    for(let i=y1; i<=y2; i++){
-                        for(let j=x1; j<=x2; j++){
-                            let position : Coordinates = {x: j, y: i}
+                    let x1: number = position1.x > position2.x ? position2.x : position1.x
+                    let x2: number = position1.x > position2.x ? position1.x : position2.x
+                    let y1: number = position1.y > position2.y ? position2.y : position1.y
+                    let y2: number = position1.y > position2.y ? position1.y : position2.y
+                    for (let i = y1; i <= y2; i++) {
+                        for (let j = x1; j <= x2; j++) {
+                            let position: Coordinates = { x: j, y: i }
                             let item = Data.map_elements.find(element => element.position.x == position.x && element.position.y == position.y)!;
                             item.item.classList.add('selected');
                         }
                     }
-                    }    
+                }
             })
 
-            this.item.addEventListener('mouseup', () => { 
-            if(Data.area_selector_item){              
-                let position1 = JSON.parse(Data.area_selector_item?.getAttribute('cords')!);
-                let position2 = this.position;
-                let x1 : number = position1.x > position2.x ? position2.x : position1.x
-                let x2 : number = position1.x > position2.x ? position1.x : position2.x
-                let y1 : number = position1.y > position2.y ? position2.y : position1.y
-                let y2 : number = position1.y > position2.y ? position1.y : position2.y
-                Data.area_selector_item = null;
-                for(let i=y1; i<=y2; i++){
-                    for(let j=x1; j<=x2; j++){
-                        let position : Coordinates = {x: j, y: i}
-                        let item = Data.map_elements.find(element => element.position.x == position.x && element.position.y == position.y)!;
-                        item.item.classList.add('selected');
-                        Data.selected_items.push(item.item)
+            this.item.addEventListener('mouseup', () => {
+                if (Data.area_selector_item) {
+                    let position1 = JSON.parse(Data.area_selector_item?.getAttribute('cords')!);
+                    let position2 = this.position;
+                    let x1: number = position1.x > position2.x ? position2.x : position1.x
+                    let x2: number = position1.x > position2.x ? position1.x : position2.x
+                    let y1: number = position1.y > position2.y ? position2.y : position1.y
+                    let y2: number = position1.y > position2.y ? position1.y : position2.y
+                    Data.area_selector_item = null;
+                    for (let i = y1; i <= y2; i++) {
+                        for (let j = x1; j <= x2; j++) {
+                            let position: Coordinates = { x: j, y: i }
+                            let item = Data.map_elements.find(element => element.position.x == position.x && element.position.y == position.y)!;
+                            item.item.classList.add('selected');
+                            Data.selected_items.push(item.item)
+                        }
                     }
                 }
-            }
             })
         }
         ////////....Koniec kodu odpowiedzialnego za selektor powierzchniowy
-
-        /////Wklejanie
-        window.addEventListener('paste_custom', ()=>{
-            if(Data.copy_buffer.length > 0){
-                Data.selected_items = [];
-                let ofsetX : number = Data.copy_buffer[0].position.x
-                let ofsetY : number = Data.copy_buffer[0].position.y
-                let startPosition : Coordinates = Data.cursor_position?.position!;
-                Data.copy_buffer.forEach((element)=>{
-                    let item = Data.map_elements.find(item => item.position.x == startPosition.x + (element.position.x - ofsetX) 
-                    && item.position.y == startPosition.y + (element.position.y - ofsetY))
-                    item?.colorElement(element.type)
-                })
-
-               function copy_mouse_move(){
-                     Data.map_elements.forEach((element)=>{
-                         element.colorElement();
-                     })
-                    let startPosition : Coordinates = Data.cursor_position?.position!;
-                    Data.copy_buffer.forEach((element)=>{
-                     let item = Data.map_elements.find(item => item.position.x == startPosition.x + (element.position.x - ofsetX) 
-                     && item.position.y == startPosition.y + (element.position.y - ofsetY))
-                     item?.colorElement(element.type)
-                     })
-                }
-
-
-               this.item.addEventListener('mousemove', copy_mouse_move)
-               window.addEventListener('click', ()=>{
-                    let startPosition : Coordinates = Data.cursor_position?.position!;
-                    Data.copy_buffer.forEach((element)=>{
-                    let item = Data.map_elements.find(item => item.position.x == startPosition.x + (element.position.x - ofsetX) 
-                    && item.position.y == startPosition.y + (element.position.y - ofsetY))!
-                    item?.colorElement(element.type)
-                    item.type = element.type;
-                    })    
-                    this.item.removeEventListener('mousemove', copy_mouse_move)
-                    Data.history.push(JSON.parse(JSON.stringify(Data.map_elements)));
-                    Data.position_in_history++;
-               }, {once: true, capture: true})
-            }
-            
-        })
 
         document.getElementById(target)?.append(this.item);
     }
