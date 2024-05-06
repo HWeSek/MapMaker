@@ -41,13 +41,13 @@ const Utils = {
     },
     badApple: async () => {
         let res = await fetch('public/bad_apple.json')
-        let data: Array<Array<object>> = await res.json();
+        let data: Array<Array<any>> = await res.json();
         let frame_counter: number = 0;
         var audio = new Audio('public/bad_apple.wav');
         audio.volume = 0.2;
         setTimeout(() => { audio.play(); }, 350)
 
-        let bad_apple = setInterval(() => {
+        setInterval(() => {
             for (let i in data[frame_counter]) {
                 let type = data[frame_counter][i].color == true ? 1000 : 445;
                 Data.map_elements[i].colorElement(type)
