@@ -1,6 +1,14 @@
+/**
+ * Utils module includes some functionality methods of the app.
+ * @module
+ */
+
 import { Data } from "./data"
 import Item from "./item"
 
+/**
+    * Utils object contains useful methods.
+*/
 const Utils = {
     mapLoader: (elements: Array<Item> | undefined) => {
         if (elements) {
@@ -40,10 +48,10 @@ const Utils = {
         }
     },
     badApple: async () => {
-        let res = await fetch('public/bad_apple.json')
+        let res = await fetch('/bad_apple.json')
         let data: Array<Array<any>> = await res.json();
         let frame_counter: number = 0;
-        var audio = new Audio('public/bad_apple.wav');
+        var audio = new Audio('/bad_apple.wav');
         audio.volume = 0.2;
         setTimeout(() => { audio.play(); }, 350)
 

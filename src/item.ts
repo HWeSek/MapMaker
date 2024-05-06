@@ -1,21 +1,18 @@
+/**
+ * Item module contains the Item class
+ * @module
+ */
+
 //@ts-ignore
 import SpriteSheet from '/sprites.png';
 import { Data } from './data';
 
-interface Coordinates {
-    x: number,
-    y: number
-}
-
-interface ItemValues {
-    position: Coordinates
-    type: number
-    item: HTMLDivElement
-}
-
 export default class Item implements ItemValues {
+    /** item logical position */
     readonly position
+    /** item type */
     public type
+    /** reference to items HTML Element */
     readonly item
     constructor(position: Coordinates, id: number) {
         this.position = position;
@@ -23,6 +20,11 @@ export default class Item implements ItemValues {
         this.item = document.createElement('div');
     }
 
+    /**
+    * Method used to get background position of a given type of Item.
+    * @param id Type ID
+    * @returns returns background position coordinates
+    */
     static positionFromId(id: number): Coordinates {
         let row: number;
         let col: number;
@@ -36,7 +38,10 @@ export default class Item implements ItemValues {
         return { x: col, y: row };
     }
 
-
+    /**
+     * Deals with functioning of Items and map elements
+     * @param target Describes if the item is destined for Item grid or Map Element grid.
+     */
     public createElement(target: string) {
         this.item.classList.add('item');
         this.colorElement(this.type, this.item)
@@ -144,14 +149,22 @@ export default class Item implements ItemValues {
         document.getElementById(target)?.append(this.item);
     }
 
-
+    /**
+    * Colors a given element with a given item type
+    * @param id Type ID
+    * @param item Target html element
+    */
     public colorElement(id: number = this.type, item: HTMLDivElement = this.item) {
         /////change displayed image on an element
         item.style.backgroundImage = `url(${SpriteSheet})`;
         item.style.backgroundPositionX = `-${Item.positionFromId(id).x * 24}px`
         item.style.backgroundPositionY = `-${Item.positionFromId(id).y * 24}px`
     }
-
+    /**
+    * Colors a given element with a given item type. Static version.
+    * @param id Type ID
+    * @param item Target html element
+    */
     static colorElement(id: number, item: HTMLDivElement) {
         /////change displayed image on an element
         item.style.backgroundImage = `url(${SpriteSheet})`;

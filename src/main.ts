@@ -2,13 +2,47 @@ import Item from './item';
 import { Data } from './data';
 import Utils from './utils';
 
-interface Coordinates {
-    x: number,
-    y: number
-}
 
-/////custom paste event
-let paste: Event = new Event('paste_custom');
+
+declare global {
+    /**
+     * Describes logical coordinates of some object.
+     */
+    interface Coordinates {
+        x: number,
+        y: number
+    }
+    /**
+     * Describes properties of Item class.
+    */
+    interface ItemValues {
+        position: Coordinates
+        type: number
+        item: HTMLDivElement
+    }
+    /**
+     * Used to store data for copying and pasting.
+     */
+    interface copy_object {
+        position: Coordinates,
+        type: number
+    }
+    /**
+     * All data of the aplication.
+     */
+    interface appdata {
+        selected_item_type: number
+        selected_items: Array<HTMLDivElement>
+        automat: boolean
+        map_elements: Array<Item>,
+        history: Array<Array<Item>>,
+        ctrl: boolean,
+        position_in_history: number,
+        area_selector_item: HTMLDivElement | null,
+        copy_buffer: Array<copy_object>,
+        cursor_position: Item | undefined
+    }
+}
 
 window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
     let counter: number = 0;
@@ -48,6 +82,53 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
     window.addEventListener("keyup", (event) => {
         Data.ctrl = event.ctrlKey
     });
+    ///////////////////////FUNCTIONS
+    function paste() {
+        document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
+
+        if (Data.copy_buffer.length > 0) {
+            Data.selected_items = [];
+            let ofsetX: number = Data.copy_buffer[0].position.x
+            let ofsetY: number = Data.copy_buffer[0].position.y
+            let startPosition: Coordinates = Data.cursor_position?.position!;
+            Data.copy_buffer.forEach((element) => {
+                let item = Data.map_elements.find(item => item.position.x == startPosition.x + (element.position.x - ofsetX)
+                    && item.position.y == startPosition.y + (element.position.y - ofsetY))
+                item?.colorElement(element.type)
+            })
+
+            function copy_mouse_move() {
+                Data.map_elements.forEach((element) => {
+                    element.colorElement();
+                })
+                let startPosition: Coordinates = Data.cursor_position?.position!;
+                Data.copy_buffer.forEach((element) => {
+                    let item = Data.map_elements.find(item => item.position.x == startPosition.x + (element.position.x - ofsetX)
+                        && item.position.y == startPosition.y + (element.position.y - ofsetY))
+                    item?.colorElement(element.type)
+                })
+            }
+
+
+            window.addEventListener('mousemove', copy_mouse_move)
+            window.addEventListener('click', () => {
+                let startPosition: Coordinates = Data.cursor_position?.position!;
+                Data.copy_buffer.forEach((element) => {
+                    try {
+                        let item = Data.map_elements.find(item => item.position.x == startPosition.x + (element.position.x - ofsetX)
+                            && item.position.y == startPosition.y + (element.position.y - ofsetY))!
+                        item?.colorElement(element.type)
+                        item.type = element.type;
+                    } catch (error) {
+
+                    }
+                })
+                window.removeEventListener('mousemove', copy_mouse_move)
+                Data.history.push(JSON.parse(JSON.stringify(Data.map_elements)));
+                Data.position_in_history++;
+            }, { once: true, capture: true })
+        }
+    }
 
 
 
@@ -121,7 +202,7 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
     document.getElementById('paste')!.addEventListener('click', () => {
         /////PASTE
         document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
-        window.dispatchEvent(paste);
+        paste()
     })
 
     document.getElementById('delete')!.addEventListener('click', () => {
@@ -137,11 +218,14 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
     })
 
     document.getElementById('save')!.addEventListener('click', () => {
-
+        Utils.saveMap();
     })
 
     document.getElementById('load')!.addEventListener('click', () => {
-
+        document.getElementById('file_loader')?.click();
+        document.getElementById('file_loader')?.addEventListener('change', function () {
+            Utils.loadMap(this);
+        })
     })
     /////////////////////////////////////////////////
     window.addEventListener("keydown", (event) => {
@@ -192,53 +276,12 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
             }
         } else if (event.ctrlKey && event.key == 'v') {
             /////PASTE
+            /**
+            * Add green border to the pasting area.
+            * @todo
+            */
             document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
-
-            if (Data.copy_buffer.length > 0) {
-                Data.selected_items = [];
-                let ofsetX: number = Data.copy_buffer[0].position.x
-                let ofsetY: number = Data.copy_buffer[0].position.y
-                let startPosition: Coordinates = Data.cursor_position?.position!;
-                Data.copy_buffer.forEach((element) => {
-                    let item = Data.map_elements.find(item => item.position.x == startPosition.x + (element.position.x - ofsetX)
-                        && item.position.y == startPosition.y + (element.position.y - ofsetY))
-                    item?.colorElement(element.type)
-                })
-
-                function copy_mouse_move() {
-                    Data.map_elements.forEach((element) => {
-                        element.colorElement();
-                    })
-                    let startPosition: Coordinates = Data.cursor_position?.position!;
-                    Data.copy_buffer.forEach((element) => {
-                        let item = Data.map_elements.find(item => item.position.x == startPosition.x + (element.position.x - ofsetX)
-                            && item.position.y == startPosition.y + (element.position.y - ofsetY))
-                        item?.colorElement(element.type)
-                    })
-                }
-
-
-                window.addEventListener('mousemove', copy_mouse_move)
-                window.addEventListener('click', () => {
-                    let startPosition: Coordinates = Data.cursor_position?.position!;
-                    Data.copy_buffer.forEach((element) => {
-                        try {
-                            let item = Data.map_elements.find(item => item.position.x == startPosition.x + (element.position.x - ofsetX)
-                                && item.position.y == startPosition.y + (element.position.y - ofsetY))!
-                            item?.colorElement(element.type)
-                            item.type = element.type;
-                        } catch (error) {
-
-                        }
-                    })
-                    window.removeEventListener('mousemove', copy_mouse_move)
-                    Data.history.push(JSON.parse(JSON.stringify(Data.map_elements)));
-                    Data.position_in_history++;
-                }, { once: true, capture: true })
-            }
-
-
-
+            paste()
 
         } else if (event.key == 'Delete') {
             //////DELETE

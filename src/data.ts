@@ -1,29 +1,10 @@
-import Item from "./item"
+/**
+ * Data module contains all of the app data.
+ * @module
+ */
 
-interface Coordinates {
-    x: number,
-    y: number
-}
-
-interface copy_object {
-    position: Coordinates,
-    type: number
-}
-
-interface appdata {
-    selected_item_type: number
-    selected_items: Array<HTMLDivElement>
-    automat: boolean
-    map_elements: Array<Item>,
-    history: Array<Array<Item>>,
-    ctrl: boolean,
-    position_in_history: number,
-    area_selector_item: HTMLDivElement | null,
-    copy_buffer: Array<copy_object>,
-    cursor_position: Item | undefined
-}
-
-export let Data: appdata = {
+/** All aplication data. */
+let Data: appdata = {
     selected_item_type: 1000,
     selected_items: [],
     automat: false,
@@ -35,3 +16,5 @@ export let Data: appdata = {
     copy_buffer: [],
     cursor_position: undefined
 }
+
+export { Data }
