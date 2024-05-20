@@ -10,6 +10,10 @@ import Item from "./item"
     * Utils object contains useful methods.
 */
 const Utils = {
+    /**
+ * Loads map form a saved map array
+ * @param elements map array.
+ */
     mapLoader: (elements: Array<Item> | undefined) => {
         if (elements) {
             for (let i in elements) {
@@ -18,6 +22,9 @@ const Utils = {
             }
         }
     },
+    /**
+ * @returns returns a saved map array from the history.
+ */
     getVersion: () => {
         if (Data.history.length >= 1) {
             return Data.history[Data.position_in_history - 1]
@@ -25,6 +32,9 @@ const Utils = {
             return undefined;
         }
     },
+    /**
+ * Saves a map to a json file.
+ */
     saveMap: () => {
         const blob: Blob = new Blob([JSON.stringify(Data.map_elements)], { type: "application/json" })
         const url = URL.createObjectURL(blob);
@@ -36,6 +46,9 @@ const Utils = {
             URL.revokeObjectURL(url);
         }, 0)
     },
+    /**
+     * Imports map from a saved file. 
+     */
     loadMap: (files: HTMLElement) => {
         //@ts-ignore
         let file: Blob = files.files[0]
@@ -47,6 +60,9 @@ const Utils = {
             Utils.mapLoader(JSON.parse(reader.result))
         }
     },
+    /**
+ *Bad apple!
+ */
     badApple: async () => {
         let res = await fetch('/bad_apple.json')
         let data: Array<Array<any>> = await res.json();

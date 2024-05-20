@@ -119,6 +119,7 @@ export default class Item implements ItemValues {
                             let position: Coordinates = { x: j, y: i }
                             let item = Data.map_elements.find(element => element.position.x == position.x && element.position.y == position.y)!;
                             item.item.classList.add('selected');
+                            
                         }
                     }
                 }

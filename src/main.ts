@@ -2,8 +2,6 @@ import Item from './item';
 import { Data } from './data';
 import Utils from './utils';
 
-
-
 declare global {
     /**
      * Describes logical coordinates of some object.
@@ -43,14 +41,18 @@ declare global {
         cursor_position: Item | undefined
     }
 }
-
+/**
+ * Initialization of all items of the site.
+ */
 window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
+
     let counter: number = 0;
     for (let i: number = 1; i <= 40; i++) {
         for (let j: number = 1; j <= 16; j++) {
             let item = new Item({ x: j, y: i }, counter);
             item.createElement('items');
             counter++;
+            //debugger;
         }
     }
 
@@ -83,7 +85,11 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
         Data.ctrl = event.ctrlKey
     });
     ///////////////////////FUNCTIONS
+    /**
+ * Function responsible for pasting items.
+ */
     function paste() {
+
         document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
 
         if (Data.copy_buffer.length > 0) {
@@ -231,6 +237,9 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
     window.addEventListener("keydown", (event) => {
         if ((event.ctrlKey || event.metaKey) && event.key == 'z') {
             ////UNDO
+            /**
+ * Undo
+ */
             if (Data.history.length > 1) {
                 if (Data.position_in_history > 1) {
                     Data.position_in_history--
@@ -239,6 +248,9 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
             Utils.mapLoader(Utils.getVersion());
         } else if ((event.ctrlKey || event.metaKey) && event.key == 'y') {
             ////REDO
+            /**
+ * Redo
+ */
             if (Data.history.length >= 1) {
                 if (Data.position_in_history < Data.history.length) {
                     Data.position_in_history++
@@ -247,6 +259,9 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
             Utils.mapLoader(Utils.getVersion());
         } else if ((event.ctrlKey || event.metaKey) && event.key == 'x') {
             //////CUT
+            /**
+ * Cut
+ */
             if (Data.selected_items.length > 0) {
                 Data.copy_buffer = []
                 Data.selected_items.slice().forEach((element) => {
@@ -265,6 +280,9 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
             }
         } else if ((event.ctrlKey || event.metaKey) && event.key == 'c') {
             //////COPY
+            /**
+ * Copy
+ */
             if (Data.selected_items.length > 0) {
                 Data.copy_buffer = []
                 Data.selected_items.slice().forEach((element) => {
@@ -280,11 +298,17 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
             * Add green border to the pasting area.
             * @todo
             */
+            /**
+  * Paste
+  */
             document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
             paste()
 
         } else if (event.key == 'Delete') {
             //////DELETE
+            /**
+ * Delete
+ */
             if (Data.selected_items.length > 0) {
                 Data.selected_items.slice().forEach((element) => {
                     let position = JSON.parse(element.getAttribute('cords')!)
@@ -294,9 +318,15 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
                 })
             }
         } else if ((event.ctrlKey || event.metaKey) && event.key == 's') {
+            /**
+ * Save map
+ */
             event.preventDefault()
             Utils.saveMap();
         } else if ((event.ctrlKey || event.metaKey) && event.key == 'l') {
+            /**
+ * Load map
+ */
             event.preventDefault()
             document.getElementById('file_loader')?.click();
             document.getElementById('file_loader')?.addEventListener('change', function () {
@@ -307,11 +337,11 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
 
 
     ////////AREA SELECTOR
-    let div = document.getElementById('hover')!,
-        x1: number = 0,
-        y1: number = 0,
-        x2: number = 0,
-        y2: number = 0
+    let div = document.getElementById('hover')!
+    let x1: number = 0
+    let y1: number = 0
+    let x2: number = 0
+    let y2: number = 0
 
     function calculate() {
         let x3: number = Math.min(x1, x2);
