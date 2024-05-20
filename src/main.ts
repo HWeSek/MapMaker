@@ -229,7 +229,7 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
     })
     /////////////////////////////////////////////////
     window.addEventListener("keydown", (event) => {
-        if (event.ctrlKey && event.key == 'z') {
+        if ((event.ctrlKey || event.metaKey) && event.key == 'z') {
             ////UNDO
             if (Data.history.length > 1) {
                 if (Data.position_in_history > 1) {
@@ -237,7 +237,7 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
                 }
             }
             Utils.mapLoader(Utils.getVersion());
-        } else if (event.ctrlKey && event.key == 'y') {
+        } else if ((event.ctrlKey || event.metaKey) && event.key == 'y') {
             ////REDO
             if (Data.history.length >= 1) {
                 if (Data.position_in_history < Data.history.length) {
@@ -245,7 +245,7 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
                 }
             }
             Utils.mapLoader(Utils.getVersion());
-        } else if (event.ctrlKey && event.key == 'x') {
+        } else if ((event.ctrlKey || event.metaKey) && event.key == 'x') {
             //////CUT
             if (Data.selected_items.length > 0) {
                 Data.copy_buffer = []
@@ -263,7 +263,7 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
                 Data.selected_items = [];
                 document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
             }
-        } else if (event.ctrlKey && event.key == 'c') {
+        } else if ((event.ctrlKey || event.metaKey) && event.key == 'c') {
             //////COPY
             if (Data.selected_items.length > 0) {
                 Data.copy_buffer = []
@@ -274,7 +274,7 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
                 })
 
             }
-        } else if (event.ctrlKey && event.key == 'v') {
+        } else if ((event.ctrlKey || event.metaKey) && event.key == 'v') {
             /////PASTE
             /**
             * Add green border to the pasting area.
@@ -293,10 +293,10 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
                     item.colorElement();
                 })
             }
-        } else if (event.ctrlKey && event.key == 's') {
+        } else if ((event.ctrlKey || event.metaKey) && event.key == 's') {
             event.preventDefault()
             Utils.saveMap();
-        } else if (event.ctrlKey && event.key == 'l') {
+        } else if ((event.ctrlKey || event.metaKey) && event.key == 'l') {
             event.preventDefault()
             document.getElementById('file_loader')?.click();
             document.getElementById('file_loader')?.addEventListener('change', function () {
