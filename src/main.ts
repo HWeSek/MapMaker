@@ -377,7 +377,5 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
 
 
     ////BAD APPLE
-    document.getElementById('ba')!.onclick = () => {
-        Utils.badApple();
-    }
+    document.getElementById('ba')!.addEventListener('click', Utils.badApple, { once: true })
 }, { once: true });
