@@ -77,7 +77,7 @@ const Utils = {
                 Data.map_elements[i].colorElement(type)
             }
             frame_counter++;
-        }, 33)
+        }, 33 * 5)
     }
 }
 

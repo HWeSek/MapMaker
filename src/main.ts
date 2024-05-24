@@ -78,7 +78,12 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
 
     // ////////KEYBINDS
     window.addEventListener("keydown", (event) => {
-        Data.ctrl = event.ctrlKey
+        if (event.ctrlKey == true) {
+            Data.ctrl = event.ctrlKey
+        }
+        if (event.metaKey == true) {
+            Data.ctrl = event.metaKey
+        }
     });
 
     window.addEventListener("keyup", (event) => {
@@ -140,6 +145,8 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
 
     ////////////////CONTEXT MENU
     window.addEventListener("contextmenu", (e) => {
+        console.log(Data.selected_items);
+
         e.preventDefault();
         let menu: HTMLElement = document.getElementById('context_menu')!;
         menu.style.display = 'flex';
@@ -220,6 +227,8 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
                 item.type = 1000;
                 item.colorElement();
             })
+            Data.history.push(JSON.parse(JSON.stringify(Data.map_elements)));
+            Data.position_in_history++;
         }
     })
 
@@ -316,6 +325,8 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
                     item.type = 1000;
                     item.colorElement();
                 })
+                Data.history.push(JSON.parse(JSON.stringify(Data.map_elements)));
+                Data.position_in_history++;
             }
         } else if ((event.ctrlKey || event.metaKey) && event.key == 's') {
             /**
@@ -335,6 +346,16 @@ window.addEventListener('DOMContentLoaded', () => { // ///ITEMS INIT
         }
     });
 
+    /////Puszczenie area selectora
+    window.addEventListener('mouseup', () => {
+        if (Data.area_selector_item) {
+            Data.area_selector_item = null;
+            document.querySelectorAll('.selected').forEach((element) => {
+                if (!Data.selected_items.includes(element as HTMLDivElement))
+                    Data.selected_items.push(element as HTMLDivElement);
+            })
+        }
+    })
 
     ////////AREA SELECTOR
     let div = document.getElementById('hover')!

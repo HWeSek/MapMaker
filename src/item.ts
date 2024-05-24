@@ -52,7 +52,6 @@ export default class Item implements ItemValues {
                 if (Data.selected_items.length != 0) {
                     /////kolorowanie i zmienianie danych elementów mapy
                     document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
-                    this.item.classList.add('selected');
                     Data.selected_item_type = this.type;
 
                     Data.selected_items.forEach((item) => {
@@ -86,8 +85,15 @@ export default class Item implements ItemValues {
                         document.querySelectorAll('.item').forEach((element) => { element.classList.remove('selected') })
                         Data.selected_items.pop();
                     }
-                    this.item.classList.add('selected');
-                    Data.selected_items.push(this.item);
+                    if (this.item.classList.contains('selected')) {
+                        if (Data.ctrl) {
+                            this.item.classList.remove('selected');
+                            delete Data.selected_items[Data.selected_items.indexOf(this.item)];
+                        }
+                    } else {
+                        this.item.classList.add('selected');
+                        Data.selected_items.push(this.item);
+                    }
                 }
             }, true)
 
@@ -104,6 +110,7 @@ export default class Item implements ItemValues {
             })
 
             this.item.addEventListener('mousemove', () => {
+
                 ////saving current cursor position over the grid
                 Data.cursor_position = this
                 if (Data.area_selector_item) {
@@ -118,28 +125,9 @@ export default class Item implements ItemValues {
                         for (let j = x1; j <= x2; j++) {
                             let position: Coordinates = { x: j, y: i }
                             let item = Data.map_elements.find(element => element.position.x == position.x && element.position.y == position.y)!;
-                            item.item.classList.add('selected');
-                            
-                        }
-                    }
-                }
-            })
-
-            this.item.addEventListener('mouseup', () => {
-                if (Data.area_selector_item) {
-                    let position1 = JSON.parse(Data.area_selector_item?.getAttribute('cords')!);
-                    let position2 = this.position;
-                    let x1: number = position1.x > position2.x ? position2.x : position1.x
-                    let x2: number = position1.x > position2.x ? position1.x : position2.x
-                    let y1: number = position1.y > position2.y ? position2.y : position1.y
-                    let y2: number = position1.y > position2.y ? position1.y : position2.y
-                    Data.area_selector_item = null;
-                    for (let i = y1; i <= y2; i++) {
-                        for (let j = x1; j <= x2; j++) {
-                            let position: Coordinates = { x: j, y: i }
-                            let item = Data.map_elements.find(element => element.position.x == position.x && element.position.y == position.y)!;
-                            item.item.classList.add('selected');
-                            Data.selected_items.push(item.item)
+                            if (!item.item.classList.contains('selected')) {
+                                item.item.classList.add('selected');
+                            }
                         }
                     }
                 }
